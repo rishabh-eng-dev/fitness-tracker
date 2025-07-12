@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth-server
+          uri: lb://auth-server
+          predicates:
+            - Path=/api/v1/auth/**
+        - id: auth-server-oauth2
+          uri: lb://auth-server
+          predicates:
+            - Path=/oauth2/authorization/**
+        - id: auth-server-oauth2-callback
+          uri: lb://auth-server
+          predicates:
+            - Path=/login/oauth2/code/**
+
+# Eureka client configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
