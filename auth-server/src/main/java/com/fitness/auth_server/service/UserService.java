@@ -8,8 +8,7 @@ import com.fitness.auth_server.model.Role;
 import com.fitness.auth_server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -61,7 +60,7 @@ public class UserService {
     }
 
     public boolean isRefreshTokenValid(RefreshTokenRequestDto refreshTokenRequestDto) {
-        UserEntity user = userRepository.findByEmail(refreshTokenRequestDto.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+        UserEntity user = getUserByEmail(refreshTokenRequestDto.getEmail());
 
         String hashedRefreshToken = user.getHashedRefreshToken();
         if (hashedRefreshToken == null || hashedRefreshToken.isEmpty()) {
@@ -121,5 +120,9 @@ public class UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    public UserEntity getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new BadCredentialsException(""));
     }
 }

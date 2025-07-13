@@ -38,7 +38,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         UserEntity user = userService.findOrCreateGoogleUser(oAuth2User);
 
-        String accessToken = jwtUtil.generateToken(email);
+        String accessToken = jwtUtil.generateToken(user.getId(), email);
         String refreshToken = userService.updateRefreshToken(email);
 
         AuthResponseDto authResponseDTO = AuthResponseDto.builder()

@@ -4,6 +4,7 @@ import com.fitness.auth_server.dto.AuthResponseDto;
 import com.fitness.auth_server.dto.LoginDto;
 import com.fitness.auth_server.dto.RefreshTokenRequestDto;
 import com.fitness.auth_server.dto.RegisterDto;
+import com.fitness.auth_server.entity.UserEntity;
 import com.fitness.auth_server.jwt.JwtUtil;
 import com.fitness.auth_server.service.UserService;
 import jakarta.validation.Valid;
@@ -46,14 +47,8 @@ public class AuthController {
     @PostMapping("/login")
     private ResponseEntity<?> login(@Valid @RequestBody LoginDto loginDto) {
         Authentication authentication = getAuthentication(loginDto.getEmail(), loginDto.getPassword());
-
-        if (authentication.isAuthenticated()) {
-            AuthResponseDto authResponseDTO = getAuthResponseDto(loginDto.getEmail());
-            return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
-        } else {
-            throw new UsernameNotFoundException("Invalid user request!");
-        }
-
+        AuthResponseDto authResponseDTO = getAuthResponseDto(loginDto.getEmail());
+        return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
     }
 
     @PostMapping("/refreshToken")
@@ -73,11 +68,11 @@ public class AuthController {
             throw new UsernameNotFoundException("Invalid user request!");
         }
         return authentication;
-
     }
 
     private AuthResponseDto getAuthResponseDto(String email) {
-        String accessToken = jwtUtil.generateToken(email);
+        UserEntity user = userService.getUserByEmail(email);
+        String accessToken = jwtUtil.generateToken(user.getId(), email);
         String refreshToken = userService.updateRefreshToken(email);
         return AuthResponseDto.builder()
                 .accessToken(accessToken)

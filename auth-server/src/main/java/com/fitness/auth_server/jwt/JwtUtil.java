@@ -23,6 +23,9 @@ public class JwtUtil {
     @Value("${jwt.access_duration}")
     private Integer ACCESS_DURATION;
 
+    @Value("${jwt.issuer}")
+    private String ISSUER;
+
     private SecretKey secretKey;
 
     @PostConstruct
@@ -40,15 +43,11 @@ public class JwtUtil {
         return bytes;
     }
 
-    public String generateToken(Authentication authentication) {
-        String email = authentication.getName();
-        return generateToken(email);
-    }
-
-    public String generateToken(String email) {
-
+    public String generateToken(Long userId, String email) {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("userId", userId)
+                .setIssuer(ISSUER)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_DURATION))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
