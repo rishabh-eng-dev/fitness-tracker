@@ -72,7 +72,7 @@ public class AuthController {
 
     private AuthResponseDto getAuthResponseDto(String email) {
         UserEntity user = userService.getUserByEmail(email);
-        String accessToken = jwtUtil.generateToken(user.getId(), email);
+        String accessToken = jwtUtil.generateToken(user);
         String refreshToken = userService.updateRefreshToken(email);
         return AuthResponseDto.builder()
                 .accessToken(accessToken)

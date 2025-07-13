@@ -1,6 +1,8 @@
 package com.fitness.auth_server.jwt;
 
+import com.fitness.auth_server.entity.UserEntity;
 import com.fitness.auth_server.model.JwtTokenType;
+import com.fitness.auth_server.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
 @Component
@@ -43,10 +46,11 @@ public class JwtUtil {
         return bytes;
     }
 
-    public String generateToken(Long userId, String email) {
+    public String generateToken(UserEntity user) {
         return Jwts.builder()
-                .setSubject(email)
-                .claim("userId", userId)
+                .setSubject(user.getEmail())
+                .claim("userId", user.getId())
+                .claim("roles", user.getRoles().stream().map(Role::name).collect(Collectors.toList()))
                 .setIssuer(ISSUER)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_DURATION))
