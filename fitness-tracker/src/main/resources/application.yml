@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: fitness-tracker
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: fitness-tracker
+
+server:
+  port: 7070
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+
+jwt:
+  access_secret: ${JWT_ACCESS_SECRET}
