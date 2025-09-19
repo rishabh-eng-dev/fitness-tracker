@@ -11,6 +11,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +54,21 @@ public class GlobalExceptionHandler {
         ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
         errorDetail.setTitle("Access Denied");
         errorDetail.setDetail("You are not authorized to access this resource.");
+        return errorDetail;
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ProblemDetail handleNoResourceException(NoResourceFoundException exception) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        errorDetail.setTitle("Resource not found");
+        errorDetail.setDetail("Resource not found. Please provide correct resource");
+        return errorDetail;
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ProblemDetail handleNoResourceException(ResponseStatusException exception) {
+        ProblemDetail errorDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        errorDetail.setDetail(exception.getReason());
         return errorDetail;
     }
 

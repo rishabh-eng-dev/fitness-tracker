@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Document(collection = "user_profiles")
@@ -31,8 +32,8 @@ public class UserProfile {
     @AllArgsConstructor
     public static class PersonalDetails {
         private Double weight;
-        private Double heightCm;
-        private Instant dateOfBirth;
+        private Double height;
+        private Date dateOfBirth;
     }
 
     @Data

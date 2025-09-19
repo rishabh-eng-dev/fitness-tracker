@@ -6,18 +6,16 @@ import com.fitness.auth_server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
+
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,8 +27,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        String password = userEntity.getPassword();
+        if (password == null) {
+            // Generate a random, unusable password for OAuth2 users
+            password = UUID.randomUUID().toString();
+        }
+
         return new User(userEntity.getEmail(),
-                userEntity.getPassword(),
+                password,
                 userEntity.isEnabled(),
                 userEntity.isAccountNonExpired(),
                 userEntity.isCredentialsNonExpired(),

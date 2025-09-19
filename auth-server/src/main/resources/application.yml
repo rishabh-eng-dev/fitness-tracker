@@ -28,6 +28,9 @@ server:
   port: 9090
   forward-headers-strategy: framework
 
+frontend:
+  host: http://localhost:3000
+
 eureka:
   client:
     service-url:

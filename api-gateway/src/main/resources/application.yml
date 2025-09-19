@@ -19,10 +19,28 @@ spring:
           uri: lb://auth-server
           predicates:
             - Path=/login/oauth2/code/**
+        - id: auth-server-user
+          uri: lb://auth-server
+          predicates:
+            - Path=/api/v1/user/**
         - id: fitness-tracker
           uri: lb://fitness-tracker
           predicates:
-            - Path=/api/fitness/**
+            - Path=/api/v1/fitness/**
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "http://localhost:3000"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - PATCH
+            allowed-headers: "*"
+            allow-credentials: true
+            max-age: 3600
 
 # Eureka client configuration
 eureka:

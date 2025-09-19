@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -24,7 +25,7 @@ public class ExerciseService {
     
     public List<Exercise> getExercisesByMuscleGroup(String userId, String muscleGroup) {
         return exerciseRepository.findByPrimaryMuscleGroupsInAndCreatedByIn(
-                Arrays.asList(muscleGroup),
+                Collections.singletonList(muscleGroup),
                 Arrays.asList("SYSTEM", userId)
         );
     }

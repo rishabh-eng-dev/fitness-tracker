@@ -9,8 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
-@RequestMapping("/api/fitness/profile")
+@RequestMapping("/api/v1/fitness/profile")
 @RequiredArgsConstructor
 public class UserProfileController {
 
@@ -19,11 +21,20 @@ public class UserProfileController {
 
     // Add or update user profile
     @PostMapping
-    public ResponseEntity<UserProfile> addOrUpdateProfile(
+    public ResponseEntity<UserProfile> addProfile(
             @AuthenticationPrincipal UserModel userModel,
             @RequestBody UserProfile profileRequest
     ) {
-        UserProfile saved = userProfileService.addOrUpdateProfile(String.valueOf(userModel.getUserId()), profileRequest);
+        UserProfile saved = userProfileService.addProfile(String.valueOf(userModel.getUserId()), profileRequest);
+        return ResponseEntity.created(URI.create("api/v1/fitness/profile")).body(saved);
+    }
+
+    @PatchMapping
+    public ResponseEntity<UserProfile> updateProfile(
+            @AuthenticationPrincipal UserModel userModel,
+            @RequestBody UserProfile profileRequest
+    ) {
+        UserProfile saved = userProfileService.updateProfile(String.valueOf(userModel.getUserId()), profileRequest);
         return ResponseEntity.ok(saved);
     }
 

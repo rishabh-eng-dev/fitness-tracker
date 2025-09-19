@@ -1,13 +1,12 @@
 package com.fitness.auth_server.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fitness.auth_server.dto.AuthResponseDto;
 import com.fitness.auth_server.entity.UserEntity;
 import com.fitness.auth_server.jwt.JwtUtil;
 import com.fitness.auth_server.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -24,7 +23,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Autowired
     private UserService userService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${frontend.host}")
+    private String frontendHost;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -39,13 +39,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtUtil.generateToken(user);
         String refreshToken = userService.updateRefreshToken(user.getEmail());
 
-        AuthResponseDto authResponseDTO = AuthResponseDto.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        String redirectUrl = String.format(
+                "%s/auth/success?accessToken=%s&refreshToken=%s",
+                frontendHost, accessToken, refreshToken
+        );
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(authResponseDTO));
+        response.sendRedirect(redirectUrl);
     }
 }
